@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const tagCounts = new Map<string, number>();
+for (const post of posts) {
+	for (const tag of post.data.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+}
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<BaseLayout title="文章" description="全部文章列表，按时间倒序排列。">
+	<header class="page-heading">
+		<p class="eyebrow">ARTICLES</p>
+		<h1>文章<span class="count">{posts.length}</span></h1>
+		<p>按时间倒序排列。用 <a class="text-link" href="/rss.xml">RSS</a> 订阅更新。</p>
+	</header>
+
+	{
+		tags.length > 0 && (
+			<div class="tag-filter">
+				{tags.map(([tag, count]) => (
+					<a href={`/tags/${tag}/`}>
+						{tag} {count}
+					</a>
+				))}
+			</div>
+		)
+	}
+
+	<div>
+		{posts.map((post) => <PostCard post={post} />)}
+	</div>
+</BaseLayout>

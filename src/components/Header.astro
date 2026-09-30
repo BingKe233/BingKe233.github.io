@@ -1,0 +1,36 @@
+---
+import { BRAND_MARK, BRAND_SUB, NAV_LINKS, SITE_TITLE } from '../consts';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) =>
+	href === '/' ? path === '/' : path === href || path.startsWith(href);
+---
+
+<header class="site-header wrap">
+	<a class="wordmark" href="/" aria-label={`${SITE_TITLE}，首页`}>
+		<span class="brand-mark" aria-hidden="true">{BRAND_MARK}</span>
+		<span>
+			{SITE_TITLE}
+			<small>{BRAND_SUB}</small>
+		</span>
+	</a>
+	<nav aria-label="主导航">
+		{
+			NAV_LINKS.map((link) => (
+				<a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+					{link.label}
+				</a>
+			))
+		}
+	</nav>
+	<button
+		id="theme-toggle"
+		class="theme-toggle"
+		type="button"
+		aria-label="主题：跟随系统，点击切换"
+		title="切换主题"
+	>
+		<span id="theme-icon" aria-hidden="true">◐</span>
+		<span id="theme-label">系统</span>
+	</button>
+</header>

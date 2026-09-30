@@ -1,0 +1,41 @@
+---
+import { SITE_AUTHOR, SITE_AUTHOR_ALT } from '../consts';
+
+/**
+ * 站点标识卡 —— 借鉴参考站的「纸质照片卡」母题：
+ * 白底 + 1px 细边 + 硬投影 + 轻微旋转，右下角一行署名。
+ * 插画用内联 SVG（而非位图），所以能跟随主题变量在明暗之间自动换色。
+ */
+interface Props {
+	rotate?: boolean;
+	caption?: boolean;
+}
+const { rotate = true, caption = true } = Astro.props;
+---
+
+<div class:list={['portrait', { 'portrait--flat': !rotate }]}>
+	<div class="portrait-frame">
+		<svg viewBox="0 0 320 320" role="img" aria-label="站点标识插画：月与山">
+			<rect width="320" height="320" fill="var(--surface)"></rect>
+			<!-- 月 -->
+			<circle cx="160" cy="120" r="58" fill="none" stroke="var(--accent)" stroke-width="2"></circle>
+			<circle cx="238" cy="74" r="5" fill="var(--accent)"></circle>
+			<circle cx="70" cy="96" r="2.5" fill="var(--accent)" opacity="0.6"></circle>
+			<!-- 山脊 -->
+			<path d="M32 250 Q160 116 288 250" fill="none" stroke="var(--accent)" stroke-width="2"></path>
+			<path d="M60 276 Q160 178 260 276" fill="none" stroke="var(--accent)" stroke-width="2" opacity="0.5"></path>
+			<!-- 地平线 -->
+			<line x1="32" y1="292" x2="288" y2="292" stroke="var(--accent)" stroke-width="2" opacity="0.3"></line>
+		</svg>
+	</div>
+	{
+		caption && (
+			<p>
+				<span class="portrait-star" aria-hidden="true">
+					✳
+				</span>
+				{SITE_AUTHOR} <span>{SITE_AUTHOR_ALT}</span>
+			</p>
+		)
+	}
+</div>

@@ -1,0 +1,28 @@
+---
+import { FOOTER_LINKS, FOOTER_NOTE, SITE_AUTHOR, SITE_TITLE } from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer wrap">
+	<div>
+		<span>
+			© {year} {SITE_TITLE} · {SITE_AUTHOR}
+			<span class="footer-note">{FOOTER_NOTE}</span>
+		</span>
+	</div>
+	<div>
+		{
+			FOOTER_LINKS.map((link) => (
+				<a
+					href={link.href}
+					target={link.external ? '_blank' : undefined}
+					rel={link.external ? 'noopener noreferrer' : undefined}
+				>
+					{link.label}
+					{link.external && ' ↗'}
+				</a>
+			))
+		}
+	</div>
+</footer>

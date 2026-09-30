@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import { formatDate, readingTime } from '../utils/format';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, heroImage } = post.data;
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	ogType="article"
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
+>
+	<a class="back-link" href="/blog/">← 所有文章</a>
+	<header class="article-head">
+		<p class="eyebrow">ARTICLE</p>
+		<h1>{title}</h1>
+		<div class="post-meta">
+			<small class="muted">{formatDate(pubDate)} · {readingTime(post.body)}</small>
+			{updatedDate && <small class="muted">更新于 {formatDate(updatedDate)}</small>}
+			{
+				tags.length > 0 && (
+					<div class="tags">
+						{tags.map((tag) => (
+							<a href={`/tags/${tag}/`}>#{tag}</a>
+						))}
+					</div>
+				)
+			}
+		</div>
+	</header>
+	{
+		heroImage && (
+			<figure class="article-cover">
+				<Image src={heroImage} alt="" width={1020} height={510} />
+			</figure>
+		)
+	}
+	<div class="article-body prose">
+		<slot />
+	</div>
+</BaseLayout>

@@ -1,0 +1,65 @@
+# 每次推送到 main 分支，自动构建并发布到 GitHub Pages。
+#
+# 日常写作流程（完全在浏览器里完成）：
+#   打开仓库 → src/content/blog/ → 新建或编辑 .md → Commit changes
+#   提交后本工作流自动跑：装依赖 → 构建 → 发布，大约 1 分钟上线。
+#
+# 前置条件：仓库必须叫 <你的用户名>.github.io，且 Settings → Pages →
+# Source 选 “GitHub Actions”。若改了仓库名，站点会落到子路径，
+# 那时必须同时设置 astro.config.mjs 的 base 并改写站内绝对链接。
+
+name: 构建并部署到 GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # 允许在 Actions 页面手动触发
+  workflow_dispatch:
+
+# GITHUB_TOKEN 所需的最小权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个发布，避免并发写坏 Pages
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 构建
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 准备 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建站点
+        run: npm run build
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: 发布
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

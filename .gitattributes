@@ -1,0 +1,12 @@
+# 仓库内统一使用 LF：项目在 Linux 上构建（GitHub Actions），
+# 避免 Windows 检出时的 CRLF 造成「本地能跑、CI 挂掉」。
+* text=auto eol=lf
+
+# 二进制文件不做换行转换
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.woff binary
+*.woff2 binary

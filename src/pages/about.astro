@@ -1,0 +1,52 @@
+---
+import SitePortrait from '../components/SitePortrait.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_AUTHOR, SOCIAL_LINKS } from '../consts';
+---
+
+<BaseLayout title="关于" description="简单介绍一下我自己和这个站点。">
+	<div class="about-layout">
+		<div class="about-portrait">
+			<SitePortrait rotate={false} caption={false} />
+			<p>
+				<span class="portrait-star" aria-hidden="true">✳</span>
+				{SITE_AUTHOR}
+			</p>
+		</div>
+
+		<div class="about-copy">
+			<p class="eyebrow">ABOUT THIS SITE</p>
+			<h1>{SITE_AUTHOR}</h1>
+			<p class="about-intro">白天写代码，晚上写点别的东西。相信「想清楚」和「写下来」是同一件事。</p>
+
+			<h2>这个站是什么</h2>
+			<p>
+				一个完全静态的个人网站：所有页面在构建时生成成 HTML，没有数据库，没有后端服务。文章是
+				Markdown 文件，改完提交就会重新部署。
+			</p>
+
+			<h2>为什么用静态站</h2>
+			<p>
+				<strong>快</strong> —— 没有数据库查询，首屏就是纯 HTML，产物里一行 JS 都没有。
+				<strong>省</strong> —— 静态托管通常免费，成本只有一个域名。
+				<strong>久</strong> —— 内容就是一堆文本文件，十年后照样能打开。
+			</p>
+
+			<h2>在别处找到我</h2>
+			<div class="social-cards">
+				{
+					SOCIAL_LINKS.map((link) => (
+						<a
+							href={link.href}
+							target={link.external ? '_blank' : undefined}
+							rel={link.external ? 'noopener noreferrer' : undefined}
+						>
+							<span>{link.label}</span>
+							<strong>{link.href.replace(/^mailto:|^https?:\/\//, '')}{link.external && ' ↗'}</strong>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</BaseLayout>

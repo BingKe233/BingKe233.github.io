@@ -1,0 +1,133 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_LANG, SITE_TITLE } from '../consts';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	/** 文章页传 'article' */
+	ogType?: 'website' | 'article';
+	/** 文章首发时间，用于 article:published_time */
+	publishedTime?: Date;
+	/** 文章最后更新时间 */
+	modifiedTime?: Date;
+}
+
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	ogType = 'website',
+	publishedTime,
+	modifiedTime,
+} = Astro.props;
+
+const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com');
+---
+
+<!doctype html>
+<html lang={SITE_LANG}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta name="color-scheme" content="light dark" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+
+		<meta property="og:locale" content="zh_CN" />
+		<meta property="og:site_name" content={SITE_TITLE} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+		{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={description} />
+
+		<script is:inline>
+			// 着色前先定主题，避免首屏闪白。localStorage 失败不能阻断渲染。
+			(() => {
+				let preference = 'system';
+				try {
+					preference = localStorage.getItem('site-theme') || 'system';
+				} catch {}
+				if (!['light', 'dark', 'system'].includes(preference)) preference = 'system';
+				document.documentElement.dataset.themePreference = preference;
+				document.documentElement.dataset.theme =
+					preference === 'system'
+						? matchMedia('(prefers-color-scheme: dark)').matches
+							? 'dark'
+							: 'light'
+						: preference;
+			})();
+		</script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">跳到主要内容</a>
+		<Header />
+		<main id="main" class="wrap" tabindex="-1">
+			<slot />
+		</main>
+		<Footer />
+		<script is:inline>
+			// 三态主题切换：跟随系统 → 浅色 → 深色
+			(() => {
+				const btn = document.getElementById('theme-toggle');
+				const icon = document.getElementById('theme-icon');
+				const label = document.getElementById('theme-label');
+				if (!btn || !icon || !label) return;
+
+				const ORDER = ['system', 'light', 'dark'];
+				const META = {
+					system: { icon: '◐', text: '系统' },
+					light: { icon: '☀', text: '浅色' },
+					dark: { icon: '☾', text: '深色' },
+				};
+
+				const read = () => {
+					let p = 'system';
+					try {
+						p = localStorage.getItem('site-theme') || 'system';
+					} catch {}
+					return ORDER.includes(p) ? p : 'system';
+				};
+
+				const paint = (preference) => {
+					document.documentElement.dataset.themePreference = preference;
+					document.documentElement.dataset.theme =
+						preference === 'system'
+							? matchMedia('(prefers-color-scheme: dark)').matches
+								? 'dark'
+								: 'light'
+							: preference;
+					icon.textContent = META[preference].icon;
+					label.textContent = META[preference].text;
+					btn.setAttribute('aria-label', `主题：${META[preference].text}，点击切换`);
+				};
+
+				paint(read());
+
+				btn.addEventListener('click', () => {
+					const next = ORDER[(ORDER.indexOf(read()) + 1) % ORDER.length];
+					try {
+						localStorage.setItem('site-theme', next);
+					} catch {}
+					paint(next);
+				});
+
+				// 跟随系统时，系统主题变化要实时响应
+				matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+					if (read() === 'system') paint('system');
+				});
+			})();
+		</script>
+	</body>
+</html>
