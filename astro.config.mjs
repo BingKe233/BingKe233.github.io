@@ -6,8 +6,9 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	// 上线前改成自己的域名（RSS / sitemap / canonical 都依赖它）
-	site: 'https://blog.example.com',
+	// 站点正式地址：canonical / sitemap / RSS 都依赖它。
+	// 仓库名为 bingke2333.github.io，因此站点发布在根路径，无需再设 base。
+	site: 'https://bingke2333.github.io',
 	integrations: [mdx(), sitemap()],
 	build: {
 		// 不做 CSS 内联：样式统一走可缓存的外链文件，多页站不会每页重复一份

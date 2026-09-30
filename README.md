@@ -106,18 +106,50 @@ npm run preview   # 预览 dist/，注意用 localhost 而不是 127.0.0.1
 
 ---
 
-## 五、发布上线
+## 五、发布上线（已配置好，推送到 main 即自动发布）
 
-这个站是纯静态的 —— **`npm run build` 产出的 `dist/` 目录就是整个网站**，把它丢到任何静态托管上即可。
+站点通过 **GitHub Actions 自动构建并发布到 GitHub Pages**。
+
+- 仓库：`bingke2333.github.io`（公开）
+- 线上地址：**https://bingke2333.github.io/**
+- 工作流：`.github/workflows/deploy.yml`
+
+### 两条发布路径
+
+**① 在网页上写（推荐，手机也能用）**
+
+1. 打开 `https://github.com/bingke2333/bingke2333.github.io`
+2. 进入 `src/content/blog/`
+3. 点 **Add file → Create new file**，文件名写 `my-post.md`
+4. 粘贴 frontmatter + 正文
+5. 拉到下面点 **Commit changes**
+
+提交后工作流自动跑：装依赖 → 构建 → 发布，**约 1 分钟上线**。
+在仓库的 **Actions** 标签页可以看到进度，绿勾即成功。
+
+> 改已有文章同理：点开 `.md` 文件 → 右上角铅笔图标 → 改 → Commit。
+
+**② 本地写完再推**
 
 ```bash
-npm run build
-# 然后把 dist/ 里的全部文件上传到你的托管空间
+npm run build          # 先在本地确认没问题
+git add -A
+git commit -m "新文章：xxx"
+git push
 ```
 
-目前本站**还没部署**。定好托管方案（Cloudflare Pages / 阿里云 OSS+CDN 等）后，把 `astro.config.mjs` 里的 `site` 改成真实域名再构建。
+### 手动重新发布
 
-> ⚠️ 想让国内访问快，必须走国内云 + **ICP 备案**；备案号要展示在页脚。
+仓库 **Actions** → 左侧「构建并部署到 GitHub Pages」→ 右上 **Run workflow**。
+
+> ⚠️ **草稿不等于私密**：`draft: true` 只是不上网站，源文件仍在**公开仓库**里能被看到。
+> 真正不想公开的内容，先别提交进仓库。
+>
+> ⚠️ **不要改仓库名**：现在站点发布在根路径（`/`），所以站内链接写的是 `/blog/` 这种绝对路径。
+> 一旦改名，站点会落到子路径，必须同时设置 `astro.config.mjs` 的 `base` 并改写全部站内链接。
+>
+> 💡 想让国内访问更快：可在 Cloudflare Pages 里「Connect repo」指向同一个仓库（构建命令 `npm run build`，输出目录 `dist`），
+> 它会自动识别 Astro。这样等于多一个更快的镜像站，GitHub Pages 仍可保留。
 
 ---
 
