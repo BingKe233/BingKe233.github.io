@@ -110,15 +110,15 @@ npm run preview   # 预览 dist/，注意用 localhost 而不是 127.0.0.1
 
 站点通过 **GitHub Actions 自动构建并发布到 GitHub Pages**。
 
-- 仓库：`bingke2333.github.io`（公开）
-- 线上地址：**https://bingke2333.github.io/**
+- 仓库：`BingKe233.github.io`（公开）
+- 线上地址：**https://bingke233.github.io/**
 - 工作流：`.github/workflows/deploy.yml`
 
 ### 两条发布路径
 
 **① 在网页上写（推荐，手机也能用）**
 
-1. 打开 `https://github.com/bingke2333/bingke2333.github.io`
+1. 打开 `https://github.com/BingKe233/BingKe233.github.io`
 2. 进入 `src/content/blog/`
 3. 点 **Add file → Create new file**，文件名写 `my-post.md`
 4. 粘贴 frontmatter + 正文
